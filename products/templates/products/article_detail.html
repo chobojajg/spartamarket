@@ -7,9 +7,9 @@
     <p>작성자:{{ article.author.username }}</p>
 
     {% if article.image %}
-        <img src="{{ article.image.url }}">
+        <img src="{{ article.image.url }}" alt="{{ article.image }}">
     {% endif %}
-
+    
     <p>{{ article.content }}</p>
     <p>작성시간 : {{ article.created_at }}</p>
     <p>수정시간 : {{ article.updated_at }}</p>
