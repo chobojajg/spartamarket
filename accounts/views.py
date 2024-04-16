@@ -8,10 +8,6 @@ from django.views.decorators.http import require_POST, require_http_methods
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 
 
-def index(request):
-    return render(request, 'products/index.html')
-
-
 @require_http_methods(["GET", "POST"])
 def login(request):
     if request.method == 'POST':
