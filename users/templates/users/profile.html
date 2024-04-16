@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <a href="/">홈으로 돌아가기</a>
+    <h1>{{ member.username }}의 프로필 페이지</h1>
+
+    <div>
+    <h2>이름 : {{ member.username }}</h2>
+    <p>가입일 : {{ member.date_joined }}</p>
+
+    {% if request.user != member %}
+        <form action="{% url "users:follow" member.pk %}" method="POST">
+            {% csrf_token %}
+            {% if request.user in member.followers.all %}
+                <input type="submit" value="언팔로우">
+            {% else %}
+                <input type="submit" value="팔로우">
+            {% endif %}
+        </form>
+    {% endif %}   
+
+    <p>내가 등록한 물건</p>
+
+    <p>내가 찜한 물건</p>
+    </div>
+    
+    {% if request.user == member %}
+    <a href="{% url 'accounts:update' %}">회원정보수정</a>
+    <form action="{% url 'accounts:delete' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">회원탈퇴</button>
+    </form>
+    {% endif %}
+
+{% endblock content %}
+
+
+

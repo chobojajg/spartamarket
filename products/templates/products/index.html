@@ -14,15 +14,17 @@
 
     {% for article in articles %}
         <a href="{% url 'products:article_detail' article.pk %}">
-            <p>[{{ article.pk }}] {{ article.title }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ article.author }}</p>
+            <p>[{{ article.pk }}] &nbsp;&nbsp; {{ article.title }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ article.author }}</p>
         </a>
 
         <form action="{% url 'products:like' article.pk %}" method="post">
         {% csrf_token %}
-        {% if request.user in article.like_users.all %}
-            <input type="submit" value="안좋아요">
-        {% else %}
-            <input type="submit" value="좋아요">
+        {% if request.user.is_authenticated %}
+            {% if request.user in article.like_users.all %}
+                <input type="submit" value="안좋아요">
+            {% else %}
+                <input type="submit" value="좋아요">
+            {% endif %}
         {% endif %}
         </form>
     {% endfor %}

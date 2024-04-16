@@ -6,13 +6,17 @@ from django.views.decorators.http import require_POST, require_http_methods
 
 
 def index(request):
-    articles = Product.objects.all().order_by('-created_at')
-    context = {
-        'articles': articles,
-    }
-    return render(request, 'products/index.html', context)
+    if request.user.is_authenticated:
+        articles = Product.objects.all().order_by('-created_at')
+        context = {
+            'articles': articles,
+        }
+        return render(request, 'products/index.html', context)
+    else:
+        return redirect('accounts:login')
 
 
+@login_required
 def article_detail(request, pk):
     article = get_object_or_404(Product, pk=pk)  # Article.objects.get(pk=pk)
     comment_form = CommentForm()
@@ -49,7 +53,7 @@ def update(request, pk):
     article = get_object_or_404(Product, pk=pk)
     if article.author == request.user:
         if request.method == "POST":  # update
-            form = ArticleForm(request.POST, instance=article)
+            form = ArticleForm(request.POST, request.FILES, instance=article)
             if form.is_valid():
                 article = form.save()
                 return redirect('products:article_detail', article.pk)
@@ -65,6 +69,7 @@ def update(request, pk):
     return render(request, 'products/update.html', context)
 
 
+@login_required
 @require_POST
 def delete(request, pk):
     article = get_object_or_404(Product, pk=pk)
@@ -75,6 +80,7 @@ def delete(request, pk):
     return redirect('products:index')
 
 
+@login_required
 @require_POST
 def comment_create(request, pk):
     article = get_object_or_404(Product, pk=pk)
@@ -87,6 +93,7 @@ def comment_create(request, pk):
         return redirect('products:article_detail', article.pk)
 
 
+@login_required
 @require_POST
 def comment_delete(request, pk, comment_pk):
     if request.user.is_authenticated:
@@ -96,6 +103,7 @@ def comment_delete(request, pk, comment_pk):
     return redirect('products:article_detail', pk)
 
 
+@login_required
 @require_POST
 def like(request, pk):
     if request.user.is_authenticated:
