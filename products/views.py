@@ -112,5 +112,5 @@ def like(request, pk):
             article.like_users.remove(request.user)
         else:
             article.like_users.add(request.user)
-        return redirect('products:index')
+        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
     return redirect('accounts:login')
