@@ -20,8 +20,21 @@
     {% endif %}   
 
     <p>내가 등록한 물건</p>
-
+    {% for article in articles %}
+        {% if article.author == member %}
+            <a href="{% url 'products:article_detail' article.pk %}">
+                <p>[{{ article.pk }}] &nbsp;&nbsp; {{ article.title }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ article.author }}</p>
+            </a>
+        {% endif %} 
+    {% endfor %}
     <p>내가 찜한 물건</p>
+    {% for article in articles %}
+        {% if member in article.like_users.all %}
+            <a href="{% url 'products:article_detail' article.pk %}">
+                <p>[{{ article.pk }}] &nbsp;&nbsp; {{ article.title }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ article.author }}</p>
+            </a>
+        {% endif %} 
+    {% endfor %}
     </div>
     
     {% if request.user == member %}
