@@ -2,7 +2,7 @@
 
 
 {% block content %}
-    <h1>New Aritcles</h1>
+    <h1>물건 등록</h1>
 
     <form action="{% url 'products:create' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}

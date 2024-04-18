@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 
 {% block head %}
@@ -41,7 +42,7 @@
                             {% endif %}
                             <div class="card-body">
                                 <h5 class="card-title">{{ article.title }}</h5>
-                                <h3 class="card-title">{{ article.price }}원</h3>
+                                <h3 class="card-title">{{ article.price | intcomma  }}원</h3>
                                 <p class="card-text">작성자 : {{ article.author }}</p>
                             </div>
                             <div class="card-footer">

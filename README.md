@@ -20,5 +20,5 @@
 
 
 ### 사용 프로그램
-python\
+python 3.10\
 django

@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load humanize %}
+
 
 {% block content %}
     <div class="row row-col-auto">
@@ -21,36 +23,45 @@
     </div>
     </div>
     <p>
-        작성자:<a href="{% url 'users:profile' article.author.username %}">{{ article.author.username }}</a>
+        작성자 <a href="{% url 'users:profile' article.author.username %}" class="text-dark" style="text-decoration-line: none">{{ article.author.username }}</a>
     </p>
 
     {% if article.image %}
-        <img src="{{ article.image.url }}" alt="{{ article.image }}">
+        <div style="height: 300px">
+            <img src="{{ article.image.url }}" alt="{{ article.image }}" style="max-height: 100%; max-width: 100%">
+        </div>
     {% endif %}
-    <h3>{{ article.price }}원</h3>
-    <p>{{ article.content }}</p>
-    <p>{{ article.updated_at }}</p>
-    <a href="{% url 'products:index' %}">목록 보기</a>
-    {% if user == article.author %}
-        <a href="{% url 'products:update' article.pk %}"><button>수정</button></a>
-
-        <form action="{% url 'products:delete' article.pk %}" method="post">
-        {% csrf_token %}
-            <input type="submit" value="삭제">
-        </form>
-    {% endif %}
-
     <br>
+    <h3>{{ article.price | intcomma }}원</h3>
+    <hr>
+    <p>{{ article.content }}</p>
+    <hr>
+    <p>{{ article.updated_at }}</p>
+    <a href="{% url 'products:index' %}" class="btn btn-secondary">목록 보기</a>
+    <br><br>
+    {% if user == article.author %}
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'products:update' article.pk %}" class="btn btn-primary">수정</a>
+
+            <form action="{% url 'products:delete' article.pk %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="삭제" class="btn btn-danger">
+            </form>
+        </div>
+    {% endif %}
+
     <hr>
 
     <h3>댓글 {{ comments|length }}개</h3>
 
     {% if request.user.is_authenticated %}
-    <form action="{% url 'products:comment_create' article.pk %}" method="post">
-    {% csrf_token %}
-    {{ comment_form.as_p }}
-        <input type='submit' value="작성">
-    </form>
+        <div class="d-flex align-items-center">
+            <form action="{% url 'products:comment_create' article.pk %}" method="post" class="d-flex align-items-center">
+                {% csrf_token %}
+                {{ comment_form.content }}
+                <input type='submit' value="작성" style="margin-left: 10px" class="btn btn-primary">
+            </form>
+        </div>
     {% endif %}
     <hr>
     {% for comment in comments %}
@@ -68,6 +79,5 @@
         {% empty %}
         <p>댓글이 없습니다</p>
     {% endfor %}
-
-
+    <hr>
 {% endblock content %}
