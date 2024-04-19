@@ -67,13 +67,18 @@
     {% for comment in comments %}
     	<ul>
             <li>
-                {{ comment.user.username }} - {{ comment.content }}
-                {% if user == comment.user %}
-                <form action="{% url 'products:comment_delete' article.pk comment.pk %}" method="post">
-                    {% csrf_token %}
-                    <input type="submit" value="삭제">
-                </form>
-                {% endif %}
+                <div class="d-flex justify-content-between">
+                    {{ comment.user.username }} - {{ comment.content }}
+                    <div class="d-flex justify-content-between">
+                        {{ comment.created_at }}
+                        {% if user == comment.user %}
+                        <form action="{% url 'products:comment_delete' article.pk comment.pk %}" method="post">
+                            {% csrf_token %}
+                            <input type="submit" value="삭제" class="btn btn-danger">
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
             </li>
         </ul>
         {% empty %}

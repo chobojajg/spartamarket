@@ -6,9 +6,26 @@
 
     <form action="{% url 'products:update' article.pk %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
-    <button type="submit">수정</button>
+        <div>
+            <p>제목</p>
+            <p>
+                {{ form.title }}
+            </p>
+            <p>가격</p>
+            <p>
+                {{ form.price }}
+            </p>
+            <p>내용</p>
+            <p>
+                {{ form.content }}
+            </p>
+            <p>이미지 추가</p>
+            <p>
+                {{ form.image }}
+            </p>
+        </div>
+    <button type="submit" class="btn btn-primary">수정</button>
     </form>
     <br>
-    <a href="{% url 'products:article_detail' article.pk %}"><button>취소</button></a>
+    <a href="{% url 'products:article_detail' article.pk %}" class="btn btn-secondary">취소</a>
 {% endblock content %}
