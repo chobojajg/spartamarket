@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+
+{% block content %}
+    <div class="row row-col-auto">
+    <div class="col">
+        <h3>{{ article.title }}</h3>
+    </div>
+    <div class="col-1">
+        <form action="{% url 'products:like' article.pk %}" method="post">
+            {% csrf_token %}
+            {% if request.user.is_authenticated %}
+                {% if user != article.author %}
+                    {% if request.user in article.like_users.all %}
+                        <button type="submit" class="btn btn-link text-danger"><i class="fa-solid fa-heart"></i></button>
+                    {% else %}
+                        <button type="submit" class="btn btn-link text-danger"><i class="fa-regular fa-heart"></i></button>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </form>
+    </div>
+    </div>
+    <p>
+        작성자 <a href="{% url 'users:profile' article.author.username %}" class="text-dark" style="text-decoration-line: none">{{ article.author.username }}</a>
+    </p>
+
+    {% if article.image %}
+        <div style="height: 300px">
+            <img src="{{ article.image.url }}" alt="{{ article.image }}" style="max-height: 100%; max-width: 100%">
+        </div>
+    {% endif %}
+    <br>
+    <h3>{{ article.price | intcomma }}원</h3>
+    <hr>
+    <p>{{ article.content }}</p>
+    <hr>
+    <p>{{ article.updated_at }}</p>
+    <a href="{% url 'products:index' %}" class="btn btn-secondary">목록 보기</a>
+    <br><br>
+    {% if user == article.author %}
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'products:update' article.pk %}" class="btn btn-primary">수정</a>
+
+            <form action="{% url 'products:delete' article.pk %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="삭제" class="btn btn-danger">
+            </form>
+        </div>
+    {% endif %}
+
+    <hr>
+
+    <h3>댓글 {{ comments|length }}개</h3>
+
+    {% if request.user.is_authenticated %}
+        <div class="d-flex align-items-center">
+            <form action="{% url 'products:comment_create' article.pk %}" method="post" class="d-flex align-items-center">
+                {% csrf_token %}
+                {{ comment_form.content }}
+                <input type='submit' value="작성" style="margin-left: 10px" class="btn btn-primary">
+            </form>
+        </div>
+    {% endif %}
+    <hr>
+    {% for comment in comments %}
+    	<ul>
+            <li>
+                {{ comment.user.username }} - {{ comment.content }}
+                {% if user == comment.user %}
+                <form action="{% url 'products:comment_delete' article.pk comment.pk %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="삭제">
+                </form>
+                {% endif %}
+            </li>
+        </ul>
+        {% empty %}
+        <p>댓글이 없습니다</p>
+    {% endfor %}
+    <hr>
+{% endblock content %}

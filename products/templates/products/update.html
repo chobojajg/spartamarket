@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <h1>수정 하기</h1>
+
+    <form action="{% url 'products:update' article.pk %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <button type="submit">수정</button>
+    </form>
+    <br>
+    <a href="{% url 'products:article_detail' article.pk %}"><button>취소</button></a>
+{% endblock content %}

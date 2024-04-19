@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+
+{% block head %}
+    <style>
+        .card-img-top {
+        height: 15rem;
+        object-fit: cover;
+        }
+    </style>
+{% endblock head %}
+
+
+{% block content %}
+    <a href="/" class="btn btn-secondary">홈으로 돌아가기</a>
+    <h1>{{ member.username }}의 프로필 페이지</h1>
+
+    <div>
+        <p>가입일 : {{ member.date_joined }}</p>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">내가 등록한 물건</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">내가 찜한 물건</button>
+            </li>
+            {% if request.user == member %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">팔로잉 {{ followings|length }}명</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">팔로워 {{ followers|length }}명</button>
+                </li>
+            {% endif %} 
+        </ul>
+        <br>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                <div class="container">
+                    <div class="row row-cols-1 row-cols-md-4 g-4">
+                        {% for article in articles %}
+                            {% if article.author == member %}
+                                <a href="{% url 'products:article_detail' article.pk %}" style="text-decoration-line: none">
+                                    <div class="col">
+                                        <div class="card h-100" style="height: 400px">
+                                            {% if article.image %}
+                                                <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.image }}">
+                                            {% else %}
+                                                <img src="{% static '/products/baseimg.png' %}" class="card-img-top" alt="baseimg">
+                                            {% endif %}
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ article.title }}</h5>
+                                                <h3 class="card-title">{{ article.price | intcomma  }}원</h3>
+                                                <p class="card-text">작성자 : {{ article.author }}</p>
+                                            </div>
+                                            <div class="card-footer">
+                                                <small class="text-body-secondary">{{ article.updated_at }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                <div class="container">
+                    <div class="row row-cols-1 row-cols-md-4 g-4">
+                        {% for article in articles %}
+                            {% if member in article.like_users.all %}
+                                <a href="{% url 'products:article_detail' article.pk %}" style="text-decoration-line: none">
+                                    <div class="col">
+                                        <div class="card h-100" style="height: 400px">
+                                            {% if article.image %}
+                                                <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.image }}">
+                                            {% else %}
+                                                <img src="{% static '/products/baseimg.png' %}" class="card-img-top" alt="baseimg">
+                                            {% endif %}
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ article.title }}</h5>
+                                                <h3 class="card-title">{{ article.price | intcomma  }}원</h3>
+                                                <p class="card-text">작성자 : {{ article.author }}</p>
+                                            </div>
+                                            <div class="card-footer">
+                                                <small class="text-body-secondary">{{ article.updated_at }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+                <div class="container">
+                    <div class="row row-cols-1 row-cols-md-5 g-5">
+                        {% for following in followings %}
+                            <p><a href="{% url 'users:profile' following %}" class="btn btn-lin text-dark">{{ following }}</a></p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">
+                <div class="container">
+                    <div class="row row-cols-1 row-cols-md-5 g-5">
+                        {% for following in followers %}
+                            <p><a href="{% url 'users:profile' following %}" class="btn btn-lin text-dark">{{ following }}</a></p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    {% if request.user != member %}
+        <form action="{% url "users:follow" member.pk %}" method="POST">
+            {% csrf_token %}
+            {% if request.user in member.followers.all %}
+                <input type="submit" value="언팔로우" class="btn btn-secondary">
+            {% else %}
+                <input type="submit" value="팔로우" class="btn btn-primary">
+            {% endif %}
+        </form>
+    {% endif %}
+    {% if request.user == member %}
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'accounts:update' %}" class="btn btn-secondary">회원정보수정</a>
+            <form action="{% url 'accounts:delete' %}" method="post">
+                {% csrf_token %}
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    회원탈퇴
+                </button>
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">회원탈퇴</h1>
+                      </div>
+                      <div class="modal-body">
+                          탈퇴 하시려면 회원탈퇴를 입력해 주세요
+                          <input type="text" size="30" id="da_input"/>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <button type="submit" id="da_btn" class="btn btn-danger" disabled>회원탈퇴</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+<script>
+$("#da_input").keyup(function (){
+    if ($("#da_input").val()==='회원탈퇴')
+        $("#da_btn").removeAttr("disabled");
+    else
+        $("#da_btn").attr("disabled", "disabled");
+})
+</script>
+{% endblock content %}
+
+
+
