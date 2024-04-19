@@ -9,10 +9,14 @@ from products.models import Product
 @login_required
 def profile(request, username):
     member = get_object_or_404(get_user_model(), username=username)
+    followings = member.following.all()
+    followers = member.followers.all()
     articles = Product.objects.all().order_by('-created_at')
     context = {
         "member": member,
         "articles": articles,
+        "followings": followings,
+        "followers": followers,
     }
     return render(request, "users/profile.html", context)
 

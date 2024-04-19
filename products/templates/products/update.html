@@ -2,7 +2,7 @@
 
 
 {% block content %}
-    <h1>Edit Aritcles</h1>
+    <h1>수정 하기</h1>
 
     <form action="{% url 'products:update' article.pk %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
